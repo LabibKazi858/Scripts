@@ -1,7 +1,7 @@
 if game.PlaceId == 11987476545 then
-    print("GOOD BOI")
+    print("8==D")
 else
-    game.Players.LocalPlayer:Kick("WRONG GAME")
+    game.Players.LocalPlayer:Kick("SUCK MY DOGGY DUCK")
 end
 
 repeat task.wait() until game:IsLoaded()
@@ -92,7 +92,7 @@ local MainTab = Window:MakeTab({
 })
 
 MainTab:AddToggle({
-	Name = "AutoFarm Creates (Give Ban Dont Use)",
+	Name = "AutoFarm Creates (Slow So You Will Not Be Banned)",
 	Default = false,
 	Callback = function(v)
         Settings["AutoCash"] = v
@@ -123,7 +123,6 @@ spawn(function()
     while wait() do
         if Settings.AutoCash then
             pcall(function()
-
                 local a = game:GetService("Players").LocalPlayer.Backpack.Client
 
                 if a:FindFirstChild("ClientCheck") then
@@ -133,7 +132,8 @@ spawn(function()
                 if a:FindFirstChild("Check") then a:FindFirstChild("Check"):Destroy()
                 end
 
-                if not game:GetService("Players").LocalPlayer:FindFirstChild("GetCrates") and not a:FindFirstChild("Check") then
+                if not game:GetService("Players").LocalPlayer:FindFirstChild("GetCrates") then
+                    wait(2)
                      game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DialogueAnswer"):InvokeServer("kaoru","take")
                 end
 
@@ -142,7 +142,7 @@ spawn(function()
                     task.wait(0.3)
                     fireclickdetector(game:GetService("Workspace").Game.JobStuff.Crates.ClickDetector)
                 else
-                    task.wait(5)
+                    task.wait(8)
                     plr.Character:MoveTo(Vector3.new(923.44519, 39.5999832, -1109.08862))
                 end
             end)
