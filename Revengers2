@@ -1,7 +1,7 @@
 if game.PlaceId == 11987476545 then
-    print("8==D")
+    print("REVENGER IS A FUCK GAME")
 else
-    game.Players.LocalPlayer:Kick("SUCK MY DOGGY DUCK")
+    game.Players.LocalPlayer:Kick("LOL GAME IS NOT SUPPORTED")
 end
 
 repeat task.wait() until game:IsLoaded()
