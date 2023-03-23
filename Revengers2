@@ -92,7 +92,7 @@ local MainTab = Window:MakeTab({
 })
 
 MainTab:AddToggle({
-	Name = "AutoFarm Creates (Slow So You Will Not Be Banned)",
+	Name = "AutoFarm Creates (Give Ban Dont Use)",
 	Default = false,
 	Callback = function(v)
         Settings["AutoCash"] = v
@@ -133,8 +133,9 @@ spawn(function()
                 end
 
                 if not game:GetService("Players").LocalPlayer:FindFirstChild("GetCrates") then
+                    plr.Character:MoveTo(Vector3.new(920.572754, 39.599987, -1109.08337))
                     wait(2)
-                     game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DialogueAnswer"):InvokeServer("kaoru","take")
+                    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DialogueAnswer"):InvokeServer("kaoru","take")
                 end
 
                 if not game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("inAction") then
@@ -143,7 +144,7 @@ spawn(function()
                     fireclickdetector(game:GetService("Workspace").Game.JobStuff.Crates.ClickDetector)
                 else
                     task.wait(8)
-                    plr.Character:MoveTo(Vector3.new(923.44519, 39.5999832, -1109.08862))
+                    plr.Character:MoveTo(Vector3.new(919.724, 40.8765, -1111.96))
                 end
             end)
         end
@@ -207,15 +208,17 @@ spawn(function()
         if Settings.Strenght then
             pcall(function()
 
+                local part_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - game:GetService("Workspace").Game.WorkOut.PushUp.Part.p).magnitude
+
                 if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
                     game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
-                plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.PushUp.Part.Position)
+                if part_mag > 10 then
+                    plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.PushUp.Part.Position)
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 and part_mag <= 10 then
                     fireproximityprompt(game:GetService("Workspace").Game.WorkOut.PushUp.Part.ProximityPrompt,5)
                     repeat
                         wait()
@@ -231,16 +234,17 @@ spawn(function()
     while task.wait() do
         if Settings.Durability then
             pcall(function()
+                local part_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - game:GetService("Workspace").Game.WorkOut.PushUp.Part.p).magnitude
 
                 if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
                     game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
+                if part_mag > 10 then
                 plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.SitUp.Part.Position)
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 and part_mag <= 10 then
                     fireproximityprompt(game:GetService("Workspace").Game.WorkOut.SitUp.Part.ProximityPrompt,5)
                     repeat
                         wait()
@@ -256,16 +260,17 @@ spawn(function()
     while task.wait() do
         if Settings.Stamina then
             pcall(function()
+                local part_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - game:GetService("Workspace").Game.WorkOut.PushUp.Part.p).magnitude
 
                 if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
                     game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
+                if part_mag > 10 then
                 plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.Squats.Part.Position)
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 and part_mag <= 10 then
                     fireproximityprompt(game:GetService("Workspace").Game.WorkOut.Squats.Part.ProximityPrompt,5)
                     repeat
                         wait()
@@ -281,16 +286,17 @@ spawn(function()
     while task.wait() do
         if Settings.Treadmill then
             pcall(function()
+                local part_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - game:GetService("Workspace").Game.WorkOut.PushUp.Part.p).magnitude
 
                 if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
                     game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
+                if part_mag > 10 then
                 plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.Treadmill.Platform.Position)
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 and part_mag <= 10 then
                     fireproximityprompt(game:GetService("Workspace").Game.WorkOut.Treadmill.Platform.ProximityPrompt,5)
                     repeat
                         wait()
@@ -306,16 +312,17 @@ spawn(function()
     while task.wait() do
         if Settings.Dumbell then
             pcall(function()
+                local part_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - game:GetService("Workspace").Game.WorkOut.Dumbells.Platform.p).magnitude
 
                 if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
                     game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
+                if part_mag > 10 then
                 plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.Dumbells.Platform.Position)
                 end
 
-                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 and part_mag <= 10 then
                     fireproximityprompt(game:GetService("Workspace").Game.WorkOut.Dumbells.Platform.ProximityPrompt,5)
                     repeat
                         wait()
