@@ -1,0 +1,447 @@
+if game.PlaceId == 11987476545 then
+    print("GOOD BOI")
+else
+    game.Players.LocalPlayer:Kick("WRONG GAME")
+end
+
+repeat task.wait() until game:IsLoaded()
+
+-- Library Core Loadstring
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+-- Creating Gui
+local Window = OrionLib:MakeWindow({Name = "SwagHub | Revengers", HidePremium = false, SaveConfig = true, ConfigFolder = "SwagHub Config"})
+
+-- // Pre Scripts \\--
+game:GetService("UserInputService").MouseIconEnabled = true
+game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.Default
+
+for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
+    v:Disable()
+end
+
+-- // Bypass anticheat \\ --
+function Bye()
+    local a = game:GetService("Players").LocalPlayer.Backpack.Client
+    if a:FindFirstChild("ClientCheck") then a:FindFirstChild("ClientCheck"):Destroy()
+       else
+        end
+       if a:FindFirstChild("Check") then a:FindFirstChild("Check"):Destroy()
+           else
+        end
+    end
+    wait(0.1)
+Bye()
+
+OrionLib:MakeNotification({
+	Name = "Notification!",
+	Content = "Your Anticheat is bypassed",
+	Image = "rbxassetid://4483345998",
+	Time = 5
+})
+
+-- // Vars \\ --
+local plr           = game:GetService("Players").LocalPlayer
+local TweenService  = game:GetService("TweenService")
+local noclipE       = false
+local antifall      = nil
+local Settings      = {}
+
+local old
+old = hookmetamethod(game,"__namecall",function(self,...)
+    local method = getnamecallmethod()
+    if method == "Kick" or method == "kick" or method == "kick1" or method == "kick3" then
+        return warn"block the kick"
+    end
+    return old(self,...)
+end)
+
+
+
+
+local function noclip()
+	for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+		if v:IsA("BasePart") and v.CanCollide == true then
+			v.CanCollide = false
+		end
+	end
+end
+
+local function moveto(obj, speed)
+    local info = TweenInfo.new(((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - obj.Position).Magnitude)/ speed,Enum.EasingStyle.Linear)
+    local tween = TweenService:Create(game.Players.LocalPlayer.Character.HumanoidRootPart, info, {CFrame = obj})
+
+    if not game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity") then
+        antifall = Instance.new("BodyVelocity", game.Players.LocalPlayer.Character.HumanoidRootPart)
+        antifall.Velocity = Vector3.new(0,0,0)
+        noclipE = game:GetService("RunService").Stepped:Connect(noclip)
+        tween:Play()
+    end
+        
+    tween.Completed:Connect(function()
+        antifall:Destroy()
+        noclipE:Disconnect()
+    end)
+end
+
+-- // Main \\ --
+
+local MainTab = Window:MakeTab({
+	Name = "MoneyFarm",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+MainTab:AddToggle({
+	Name = "AutoFarm Creates (Give Ban Dont Use)",
+	Default = false,
+	Callback = function(v)
+        Settings["AutoCash"] = v
+	end
+})
+
+MainTab:AddToggle({
+	Name = "Auto Deposit Bank 1.2k",
+	Default = false,
+	Callback = function(v)
+        Settings["DepositBank"] = v
+	end
+})
+
+spawn(function()
+    while wait() do
+        if Settings.DepositBank then
+            pcall(function()
+                if game:GetService("Players").LocalPlayer.Stats.Yen.Value >= 1250 then
+                    game:GetService("Players").LocalPlayer.PlayerGui.MainGui.ATM.Server:InvokeServer("deposit",1250)
+                end
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while wait() do
+        if Settings.AutoCash then
+            pcall(function()
+
+                local a = game:GetService("Players").LocalPlayer.Backpack.Client
+
+                if a:FindFirstChild("ClientCheck") then
+                    a:FindFirstChild("ClientCheck"):Destroy()
+                end
+
+                if a:FindFirstChild("Check") then a:FindFirstChild("Check"):Destroy()
+                end
+
+                if not game:GetService("Players").LocalPlayer:FindFirstChild("GetCrates") and not a:FindFirstChild("Check") then
+                     game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("DialogueAnswer"):InvokeServer("kaoru","take")
+                end
+
+                if not game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("inAction") then
+                    plr.Character:MoveTo(game:GetService("Workspace").Game.JobStuff.Crates.Position)
+                    task.wait(0.3)
+                    fireclickdetector(game:GetService("Workspace").Game.JobStuff.Crates.ClickDetector)
+                else
+                    task.wait(5)
+                    plr.Character:MoveTo(Vector3.new(923.44519, 39.5999832, -1109.08862))
+                end
+            end)
+        end
+    end
+end)
+
+local GymStuff = Window:MakeTab({
+	Name = "Gym Stuff",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+GymStuff:AddToggle({
+	Name = "Auto Fatigue",
+	Default = false,
+	Callback = function(v)
+        Settings["Fatigue"] = v
+	end
+})
+
+GymStuff:AddToggle({
+	Name = "Auto Strenght",
+	Default = false,
+	Callback = function(v)
+        Settings["Strenght"] = v
+	end
+})
+
+GymStuff:AddToggle({
+	Name = "Auto Durability",
+	Default = false,
+	Callback = function(v)
+        Settings["Durability"] = v
+	end
+})
+
+GymStuff:AddToggle({
+	Name = "Auto Stamina / Speed",
+	Default = false,
+	Callback = function(v)
+        Settings["Stamina"] = v
+	end
+})
+GymStuff:AddToggle({
+	Name = "Auto Treadmill",
+	Default = false,
+	Callback = function(v)
+        Settings["Treadmill"] = v
+	end
+})
+GymStuff:AddToggle({
+	Name = "Auto Dumbells",
+	Default = false,
+	Callback = function(v)
+        Settings["Dumbell"] = v
+	end
+})
+
+spawn(function()
+    while task.wait() do
+        if Settings.Strenght then
+            pcall(function()
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
+                    game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
+                plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.PushUp.Part.Position)
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                    fireproximityprompt(game:GetService("Workspace").Game.WorkOut.PushUp.Part.ProximityPrompt,5)
+                    repeat
+                        wait()
+                    until game:GetService("Players").LocalPlayer.Stats.Stamina.Value >= 100
+                end
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait() do
+        if Settings.Durability then
+            pcall(function()
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
+                    game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
+                plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.SitUp.Part.Position)
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                    fireproximityprompt(game:GetService("Workspace").Game.WorkOut.SitUp.Part.ProximityPrompt,5)
+                    repeat
+                        wait()
+                    until game:GetService("Players").LocalPlayer.Stats.Stamina.Value >= 100
+                end
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait() do
+        if Settings.Stamina then
+            pcall(function()
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
+                    game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
+                plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.Squats.Part.Position)
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                    fireproximityprompt(game:GetService("Workspace").Game.WorkOut.Squats.Part.ProximityPrompt,5)
+                    repeat
+                        wait()
+                    until game:GetService("Players").LocalPlayer.Stats.Stamina.Value >= 100
+                end
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait() do
+        if Settings.Treadmill then
+            pcall(function()
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
+                    game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
+                plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.Treadmill.Platform.Position)
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                    fireproximityprompt(game:GetService("Workspace").Game.WorkOut.Treadmill.Platform.ProximityPrompt,5)
+                    repeat
+                        wait()
+                    until game:GetService("Players").LocalPlayer.Stats.Stamina.Value >= 100
+                end
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait() do
+        if Settings.Dumbell then
+            pcall(function()
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value <= 0 then
+                    game:GetService("ReplicatedStorage").Events.DialogueAnswer:InvokeServer("cashier girl", "take")
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.GymTime.Value > 0 then
+                plr.Character:MoveTo(game:GetService("Workspace").Game.WorkOut.Dumbells.Platform.Position)
+                end
+
+                if game:GetService("Players").LocalPlayer.Stats.Stamina.Value > 100 then
+                    fireproximityprompt(game:GetService("Workspace").Game.WorkOut.Dumbells.Platform.ProximityPrompt,5)
+                    repeat
+                        wait()
+                    until game:GetService("Players").LocalPlayer.Stats.Stamina.Value >= 100
+                end
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while task.wait() do
+        if game:GetService("Players").LocalPlayer.Stats.Fatigue.Value >= 1 then
+            game:GetService("Players").LocalPlayer.Stats.Fatigue.Value = 0
+        end
+    end
+end)
+
+
+
+local Farming = Window:MakeTab({
+	Name = "Auto Farm",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Farming:AddToggle({
+	Name = "AutoFarm Mobs",
+	Default = false,
+	Callback = function(v)
+        Settings["Autofarm"] = v
+	end
+})
+
+local function getMob()
+    local dist, mob = math.huge
+    for i,v in pairs(game:GetService("Workspace").Game.Characters:GetDescendants()) do
+        if v:IsA("Script") and v.Name == "AI" and v.Parent:IsA("Model") then
+            local get_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Parent:GetModelCFrame().p).magnitude
+            if get_mag < dist then
+                dist = get_mag
+                mob = v.Parent
+            end
+        end
+    end
+    return mob
+end
+
+spawn(function()
+    while task.wait() do
+        if Settings.Autofarm then
+            pcall(function()
+                local enemy_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - getMob():GetModelCFrame().p).magnitude
+
+                if not getMob():FindFirstChild("Knocked") then
+                    moveto(getMob():GetModelCFrame() * CFrame.new(0,0,3), 75)
+                end
+
+                if getMob():FindFirstChild("Knocked") then
+                    moveto(getMob():GetModelCFrame() * CFrame.new(0,0,3),75)
+                    game:GetService("Players").LocalPlayer.Backpack.Client.Action:FireServer("Grip")
+                end
+
+                if enemy_mag <= 10 and not getMob():FindFirstChild("Knocked") then
+                    game:GetService("Players").LocalPlayer.Backpack.Client.Action:FireServer("Punch")
+                end
+            end)
+        end
+    end
+end)
+
+local CharacterTab = Window:MakeTab({
+	Name = "Local Player",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+CharacterTab:AddSlider({
+	Name = "WalkSpeed",
+	Min = 0,
+	Max = 60,
+	Default = 5,
+	Color = Color3.fromRGB(22, 114, 201),
+	Increment = 1,
+	ValueName = "SPEED",
+	Callback = function(v)
+		game:GetService("Players").LocalPlayer.Stats.SpeedBoost.Value = v
+	end
+})
+
+
+
+local SettingsTab = Window:MakeTab({
+	Name = "Settings",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+SettingsTab:AddButton({
+	Name = "ServerHop",
+	Callback = function()
+        local Player = game.Players.LocalPlayer    
+        local Http = game:GetService("HttpService")
+        local TPS = game:GetService("TeleportService")
+        local Api = "https://games.roblox.com/v1/games/"
+        
+        local _place,_id = game.PlaceId, game.JobId
+        local _servers = Api.._place.."/servers/Public?sortOrder=Desc&limit=100"
+        function ListServers(cursor)
+           local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
+           return Http:JSONDecode(Raw)
+        end
+        
+        local Next; repeat
+           local Servers = ListServers(Next)
+           for i,v in next, Servers.data do
+               if v.playing < v.maxPlayers and v.id ~= _id then
+                   local s,r = pcall(TPS.TeleportToPlaceInstance,TPS,_place,v.id,Player)
+                   if s then break end
+               end
+           end
+           
+           Next = Servers.nextPageCursor
+        until not Next
+  	end
+})
+
+OrionLib:Init()
