@@ -929,6 +929,13 @@ if game.Workspace:FindFirstChild("Perfect Crystal") then
         Image = "rbxassetid://4483345998",
         Time = 60
     })
+else
+    OrionLib:MakeNotification({
+        Name = "L4BIB HUB",
+        Content = "No Perfect Crystal In This Server :-(",
+        Image = "rbxassetid://4483345998",
+        Time = 10
+    })
 end
 
 -- // Finnish \\ --
