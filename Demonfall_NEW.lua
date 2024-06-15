@@ -679,10 +679,7 @@ Items:AddToggle({
 	end
 })
 
-Items:AddLabel({text = "--- Read if Trinket Farm Not Working ---"})
-Items:AddParagraph("Why Not Working ?",
-                   "Its Not Working Because The Choosen Trinket Is Not Available In The Server.Changing the Trinkets Will Not Work Soo Just Leave The Server Rejoin Or Server Hop From Settings"
-                  )
+Items:AddLabel({text = "--- Trinket Farm ---"})
 
 Items:AddDropdown({
 	Name = "Select Trinket",
