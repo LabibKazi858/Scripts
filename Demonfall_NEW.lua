@@ -1,5 +1,11 @@
 repeat wait() until game:IsLoaded()
 
+if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("LoadingScreen") then
+    if game:GetService("Players").LocalPlayer.PlayerGui.LoadingScreen.Background.Loading:FindFirstChild("Skip") then
+        firesignal(game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("LoadingScreen").Background.Loading.Skip.MouseButton1Click)
+    end
+end
+
 -- // Booting Liabery \\ --
 
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/ttwizz/Roblox/master/Orion.lua", true))()
