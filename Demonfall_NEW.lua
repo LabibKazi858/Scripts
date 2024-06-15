@@ -1,26 +1,22 @@
-repeat wait() until game:IsLoaded()
 
--- // Booting Liabery \\ --
+if game.PlaceId == 4855457388 or game.PlaceId == 5094651510 then
+    print("Correct Game")
 
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/ttwizz/Roblox/master/Orion.lua", true))()
+repeat task.wait() until game:IsLoaded()
 
--- // Window \\ --
+repeat task.wait() until game:GetService("Players").LocalPlayer:FindFirstChild("GameLoaded")
+wait(2)
 
-local Window = OrionLib:MakeWindow({Name = "L4BIB DEMON FALL",
-                                    SaveConfig = true,
-                                    ConfigFolder = "L4BIB HUB",
-                                    IntroText = "Your Game Your Rules",
-                                    IntroIcon = "https://i.ibb.co/SXrT6fJ/Dark-Blue-Purple-White-Tactical-Gaming-Discord-Logo.png",
-                                    Icon = "https://i.ibb.co/SXrT6fJ/Dark-Blue-Purple-White-Tactical-Gaming-Discord-Logo.png"})
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/JRL-lav/Scripts/main/U"))()
+local Window = Library:CreateWindow("Swag Hub | Demonfall")
 
--- // Pre Scripts \\ --
-game:GetService("UserInputService").MouseIconEnabled = true  ---- Shows You Your MOUSE  FUCK THAT DEMON FALL POINTER
+-- // Pre Scripts
+game:GetService("UserInputService").MouseIconEnabled = true
 game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.Default
 
 for i,v in pairs(getconnections(game.Players.LocalPlayer.Idled)) do
     v:Disable()
 end
-
 
 -- // Vars \\ --
 local plr           = game:GetService("Players").LocalPlayer
@@ -47,20 +43,17 @@ local function moveto(obj, speed)
         noclipE = game:GetService("RunService").Stepped:Connect(noclip)
         tween:Play()
     end
-
+        
     tween.Completed:Connect(function()
         antifall:Destroy()
         noclipE:Disconnect()
     end)
 end
 
--- // AutoFarming \\ --
-local AutoFarming = Window:MakeTab({
-	Name = "AutoFarm",
-	Icon = "rbxassetid://4483345998",
-})
+-- // Farming \\ --
+local farm = Window:AddFolder("Farm")
 
-AutoFarming:AddLabel("Normal Mobs")
+farm:AddLabel({text = "--- Autofarm Tween---"})
 
 local mob_list = {
     -- Demon List
@@ -75,24 +68,21 @@ local mob_list = {
     "Zenitsu",
 }
 
-AutoFarming:AddDropdown({
-	Name = "Select Mobs",
-	Default = "1",
-	Options = mob_list,
-	Callback = function(v)
-		Settings["ChosenMob"] = v
-	end
+farm:AddList({
+    text = "Select Mob",
+    values = mob_list,
+    callback = function(v)
+        Settings["ChosenMob"] = v
+    end
 })
 
-AutoFarming:AddToggle({
-	Name = "AutoFarm Mobs",
-	Default = false,
-	Callback = function(v)
-		Settings["autofarm_mobs"] = v
-	end
+farm:AddToggle({
+    text = "Autofarm Mob",
+    state = false,
+    callback = function(v)
+        Settings["autofarm_mobs"] = v
+    end
 })
-
-AutoFarming:AddLabel("Bosses")
 
 local boss_list = {
     "Okuro",
@@ -106,38 +96,51 @@ local boss_list = {
     "Gyutaro",
 }
 
-AutoFarming:AddDropdown({
-	Name = "Select Bosses",
-	Default = "1",
-	Options = boss_list,
-	Callback = function(v)
-		Settings["ChosenBoss"] = v
-	end
+farm:AddList({
+    text = "Select Boss",
+    values = boss_list,
+    callback = function(v)
+        Settings["ChosenBoss"] = v
+    end
 })
 
-AutoFarming:AddToggle({
-	Name = "AutoFarm Bosses",
-	Default = false,
-	Callback = function(v)
-		Settings["autofarm_boss"] = v
-	end
+farm:AddToggle({
+    text = "Autofarm Boss",
+    state = false,
+    callback = function(v)
+        Settings["autofarm_boss"] = v
+    end
 })
 
-AutoFarming:AddLabel("AutoFarm Settings")
-
-AutoFarming:AddSlider({
-	Name = "Teleport Speed",
-	Min = 0,
-	Max = 75,
-	Default = 75,
-	Color = Color3.fromRGB(0, 255, 255),
-	Increment = 1,
-	Callback = function(v)
-		Settings["TpSpeed"] = v
-	end
+farm:AddSlider({
+    text = "TP Speed",
+    value = 75,
+    min = 30,
+    max = 75,
+    float = 1,
+    callback = function(v)
+        Settings["TpSpeed"] = v
+    end
 })
 
--- // AutoFarm Functions \\ --
+farm:AddToggle({
+    text = "AutoBreathe",
+    state = false,
+    callback = function(v)
+        Settings["AutoBreathe"] = v
+        if not v then
+            game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "Breath", false)
+        end
+    end
+})
+
+farm:AddToggle({
+    text = "Equip-Sword",
+    state = false,
+    callback = function(v)
+        Settings["AutoSword"] = v
+    end
+})
 
 local function getMob()
     local dist, mob = math.huge
@@ -167,6 +170,14 @@ local function getBosses()
     return mob
 end
 
+local function tpBypass()
+    local args = {
+        [1] = "Player",
+        [2] = "SpawnCharacter"
+        };
+        game:GetService("ReplicatedStorage").Remotes.Sync:InvokeServer(unpack(args))
+end
+
 spawn(function()
     while wait() do
         if Settings.autofarm_mobs then
@@ -194,12 +205,7 @@ spawn(function()
                 end
 
                 for Index, Value in next, plr.Character:GetChildren() do
-                    if Value.Name == "Stun"
-                    or Value.Name == "SequenceCooldown"
-                    or Value.Name == "HeavyCooldown"
-                    or Value.Name == "Sequence"
-                    or Value.Name == "SequenceFactor"
-                    then
+                    if Value.Name == "Stun" or Value.Name == "SequenceCooldown" or Value.Name == "HeavyCooldown" or Value.Name == "Sequence" or Value.Name == "SequenceFactor" then 
                         Value:Destroy()
                     end
                 end
@@ -245,12 +251,7 @@ spawn(function()
                 end
 
                 for Index, Value in next, plr.Character:GetChildren() do
-                    if Value.Name == "Stun"
-                    or Value.Name == "SequenceCooldown"
-                    or Value.Name == "HeavyCooldown"
-                    or Value.Name == "Sequence"
-                    or Value.Name == "SequenceFactor"
-                    then
+                    if Value.Name == "Stun" or Value.Name == "SequenceCooldown" or Value.Name == "HeavyCooldown" or Value.Name == "Sequence" or Value.Name == "SequenceFactor" then 
                         Value:Destroy()
                     end
                 end
@@ -269,116 +270,55 @@ spawn(function()
     end
 end)
 
--- // Misc / Extra \\ --
+spawn(function()
+    while wait() do
+        if Settings.AutoBreathe then
+            if game.Players.LocalPlayer.Character:FindFirstChild("Busy") then
+                game.Players.LocalPlayer.Character:FindFirstChild("Busy"):Destroy()
+            end
 
-local Misc = Window:MakeTab({
-	Name = "Misc / Extra",
-	Icon = "rbxassetid://4483345998",
+            if game.Players.LocalPlayer.Character:FindFirstChild("Slow") then 
+                game.Players.LocalPlayer.Character:FindFirstChild("Slow"):Destroy()
+            end
+        end
+    end
+end)
+
+spawn(function()
+    while wait() do
+        if Settings.AutoBreathe then
+            if game:GetService("Players").LocalPlayer.Breathing.Value ~= 100 then 
+                game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "Breath", true)
+            end
+            wait(2)
+        end
+    end
+end)
+
+spawn(function()
+    while wait() do
+        if Settings.AutoSword then
+            pcall(function()
+                if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Model"):FindFirstChild("Blade") then
+                    if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Model"):FindFirstChild("Equipped").Part0 == nil then
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "R", false, game)
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+-- // Misc / Extra \\ -- 
+local misc = Window:AddFolder("Misc / Extra")
+
+misc:AddToggle({
+    text = "No Swing Cooldown",
+    state = false,
+    callback = function(v)
+        Settings["NoCD"] = v
+    end
 })
-
-Misc:AddButton({
-	Name = "GodMode",
-	Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "FallDamageServer", 0/0)
-  	end
-})
-
-Misc:AddButton({
-	Name = "Normal Health",
-	Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "FallDamageServer", 99999999999999999999999999999999999999999999999999999999999999999999)
-  	end
-})
-
-Misc:AddToggle({
-	Name = "No Swing Cooldown",
-	Default = false,
-	Callback = function(v)
-		Settings["NoCD"] = v
-	end
-})
-
-Misc:AddToggle({
-	Name = "NoFall",
-	Default = false,
-	Callback = function(v)
-		Settings["NoFall"] = v
-	end
-})
-
-Misc:AddToggle({
-	Name = "Anti Sun Burn",
-	Default = false,
-	Callback = function(v)
-		Settings["AntiSun"] = v
-	end
-})
-
-Misc:AddToggle({
-	Name = "Anti Crow",
-	Default = false,
-	Callback = function(v)
-		Settings["AntiCrow"] = v
-	end
-})
-
-Misc:AddToggle({
-	Name = "ChatLogger",
-	Default = false,
-	Callback = function(v)
-		
-	end
-})
-
-Misc:AddToggle({
-	Name = "NoClip",
-	Default = false,
-	Callback = function(v)
-        
-	end
-})
-
-Misc:AddToggle({
-	Name = "Anti-Combat",
-	Default = false,
-	Callback = function(v)
-		Settings["AntiCombat"] = v
-	end
-})
-
-local baditems = {
-    "Combat",
-    "Stun",
-    "Damaged",
-    "downCooldown",
-    "Cooldown"
-}
-
-Misc:AddToggle({
-	Name = "Pickup-Aura",
-	Default = false,
-	Callback = function(v)
-		Settings["PickupAura"] = v
-	end
-})
-
-Misc:AddToggle({
-	Name = "AutoGourd",
-	Default = false,
-	Callback = function(v)
-		Settings["AutoGourd"] = v
-	end
-})
-
-Misc:AddToggle({
-	Name = "Enhance-Visuals",
-	Default = false,
-	Callback = function(v)
-		Settings["Visuals"] = v
-	end
-})
-
--- // Misc / Extra (Functions) \\ --
 
 spawn(function()
     while wait() do
@@ -393,6 +333,139 @@ spawn(function()
         end
     end
 end)
+
+misc:AddToggle({
+    text = "NoFall",
+    state = false,
+    callback = function(v)
+        Settings["NoFall"] = v
+    end
+})
+
+misc:AddToggle({
+    text = "Anti Sun Burn",
+    state = false,
+    callback = function(v)
+        Settings["AntiSun"] = v
+    end
+})
+
+misc:AddToggle({
+    text = "Anti Crow",
+    state = false,
+    callback = function(v)
+        Settings["AntiCrow"] = v
+    end
+})
+
+local nofall
+
+nofall = hookmetamethod(game, "__namecall", function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+
+    if method == "FireServer" and tostring(self) == "Async" and args[1] == "Character" and args[2] == "FallDamageServer" and Settings.NoFall then 
+        return nil
+    end
+
+    if method == "FireServer" and tostring(self) == "Async" and args[1] == "Character" and args[2] == "DemonWeakness" and Settings.AntiSun then 
+        return nil
+    end
+
+    if method == "FireServer" and tostring(self) == "Async" and args[1] == "Character" and args[2] == "Crow" and Settings.AntiCrow then 
+        return nil
+    end
+
+    return nofall(self, ...)
+end)
+
+
+
+misc:AddToggle({
+    text = "ChatLogger",
+    state = false,
+    callback = function(v)
+        if v then
+            plr.PlayerGui.Chat.Frame.ChatChannelParentFrame.Visible = true
+        else
+            plr.PlayerGui.Chat.Frame.ChatChannelParentFrame.Visible = false
+        end
+    end
+})
+
+local function InfJump(inputObject, gameProcessedEvent)
+    if inputObject.KeyCode == Enum.KeyCode.Space then
+        game.Players.LocalPlayer.Character.Humanoid:ChangeState(3)
+    end
+end
+
+local connection
+misc:AddToggle({
+    text = "InfJump",
+    state = false,
+    callback = function(v)
+        if v then 
+            connection = game:GetService("UserInputService").InputBegan:connect(InfJump)
+        else
+            if connection then 
+                connection:Disconnect()
+            end
+        end
+    end
+})
+
+local noclipT
+misc:AddToggle({
+    text = "NoClip",
+    state = false,
+    callback = function(v)
+        if v then 
+            noclipT = game:GetService("RunService").Stepped:Connect(noclip)
+        else
+            if noclipT then 
+                noclipT:Disconnect()
+            end
+        end
+    end
+})
+
+misc:AddToggle({
+    text = "Anti-Combat",
+    state = false,
+    callback = function(v)
+        Settings["AntiCombat"] = v
+    end
+})
+
+local baditems = {
+    "Combat",
+    "Stun",
+    "Damaged",
+    "downCooldown",
+    "Cooldown"
+}
+
+spawn(function()
+    while wait() do 
+        if Settings.AntiCombat then
+            pcall(function()
+                for i,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                    if table.find(baditems, v.Name) then
+                        v:Destroy()
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+misc:AddToggle({
+    text = "Pickup-Aura",
+    state = false,
+    callback = function(v)
+        Settings["PickupAura"] = v
+    end
+})
 
 spawn(function()
     while wait() do 
@@ -411,6 +484,14 @@ spawn(function()
     end
 end)
 
+misc:AddToggle({
+    text = "AutoGourd",
+    state = false,
+    callback = function(v)
+        Settings["AutoGourd"] = v
+    end
+})
+
 spawn(function()
     while wait(0.1) do 
         if Settings.AutoGourd then 
@@ -421,6 +502,28 @@ spawn(function()
         end
     end
 end)
+
+misc:AddToggle({
+    text = "Enhance-Visuals",
+    callback = function(v)
+        Settings["Visuals"] = v
+        pcall(function()
+            game.Lighting.SunRays.Enabled = false
+            game.Lighting.ColorCorrection.Enabled = false
+            game.Lighting.Blur.Enabled = false
+            game.Lighting.Bloom.Enabled = false
+
+            for i,v in pairs(game.Lighting:GetChildren()) do
+                if v.Name == "Atmosphere" then
+                    v.Density = 0
+                    v.Glare = 0
+                    v.Haze = 0
+                end
+            end
+            game.Lighting.Blind:Destroy()
+        end)
+    end
+})
 
 spawn(function()
     while wait(1) do
@@ -447,56 +550,73 @@ spawn(function()
     end
 end)
 
--- // Players \\ --
+misc:AddLabel({text = "---Turn off NoFall---"})
 
-local Players = Window:MakeTab({
-	Name = "Players",
-	Icon = "rbxassetid://4483345998",
+misc:AddButton({
+    text = "GodMode",
+    callback = function()
+        pcall(function()
+            game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "FallDamageServer", 0/0)
+        end)
+    end
 })
 
-Players:AddLabel("LocalPlayer Items")
+misc:AddButton({
+    text = "NormalHealth (Kills You)",
+    callback = function()
+        pcall(function()
+            game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "FallDamageServer", 99999999999999999999999999999999999999999999999999999999999999999999)
+        end)
+    end
+})
+
+misc:AddLabel({text = "---Turn off NoFall---"})
+
+-- // Players \\ -- 
+local plrs = Window:AddFolder("Players")
+
+plrs:AddLabel({text = "----LocalPlayer Items"})
 
 local mt = getrawmetatable(game)
 local index = mt.__newindex
 
-Players:AddSlider({
-	Name = "WalkSpeed",
-	Min = 18,
-	Max = 150,
-	Default = 18,
-	Color = Color3.fromRGB(0,255,255),
-	Increment = 1,
-	Callback = function(v)
-		Settings["WalkSpeed"] = v
-	end
+plrs:AddSlider({
+    text = "WalkSpeed",
+    value = 18,
+    min = 18,
+    max = 150,
+    float = 1,
+    callback = function(v)
+        Settings["WalkSpeed"] = v
+    end
 })
 
-Players:AddToggle({
-	Name = "Enable WalkSpeed",
-	Default = false,
-	Callback = function(v)
-		Settings["TogWalk"] = v
-	end    
+plrs:AddToggle({
+    text = "Enable WalkSpeed",
+    state = false,
+    callback = function(v)
+        Settings["TogWalk"] = v
+    end
 })
 
-Players:AddSlider({
-	Name = "JumpPower",
-	Min = 60,
-	Max = 100,
-	Default = 60,
-	Color = Color3.fromRGB(0,255,255),
-	Increment = 1,
-	Callback = function(v)
-		Settings["JumpPower"] = v
-	end
+
+plrs:AddSlider({
+    text = "JumpPower",
+    value = 60,
+    min = 60,
+    max = 100,
+    float = 1,
+    callback = function(v)
+        Settings["JumpPower"] = v
+    end
 })
 
-Players:AddToggle({
-	Name = "Enable JumpPower",
-	Default = false,
-	Callback = function(v)
-		Settings["TogJump"] = v
-	end
+plrs:AddToggle({
+    text = "Enable JumpPower",
+    state = false,
+    callback = function(v)
+        Settings["TogJump"] = v
+    end
 })
 
 setreadonly(mt, false)
@@ -511,33 +631,31 @@ mt.__newindex = newcclosure(function(f,i,v)
 
     return index(f,i,v)
 end)
-
 setreadonly(mt, true)
 
-Players:AddLabel("LocalPlayer Items")
+
+plrs:AddLabel({text = "----Player Items"})
 
 local plr_table = {}
-
 for i,v in pairs(game.Players:GetPlayers()) do
-    if not table.find(plr_table, v.Name) then
+    if not table.find(plr_table, v.Name) then 
         table.insert(plr_table, v.Name)
     end
 end
 
-Players:AddDropdown({
-	Name = "Select Player",
-	Default = "1",
-	Options = plr_table,
-	Callback = function(v)
-		Settings["ChosenPlayer"] = v
-	end
+local plr_drop = plrs:AddList({
+    text = "Select Player",
+    values = plr_table,
+    callback = function(v)
+        Settings["ChosenPlayer"] = v
+    end
 })
 
-Players:AddButton({
-	Name = "Refresh Player",
-	Callback = function()
+plrs:AddButton({
+    text = "Refresh Players",
+    callback = function()
         table.clear(plr_table)
-        Players:RemoveAll()
+        plr_drop:RemoveAll()
 
         for i,v in pairs(game.Players:GetPlayers()) do
             if not table.find(plr_table, v.Name) then 
@@ -546,36 +664,33 @@ Players:AddButton({
         end
         
         for i,v in pairs(plr_table) do
-            Players:AddValue(tostring(v))
+            plr_drop:AddValue(tostring(v))
         end
-  	end
+    end
 })
 
-Players:AddToggle({
-	Name = "Spectate",
-	Default = false,
-	Callback = function(v)
-		if v then 
+plrs:AddToggle({
+    text = "Spectate",
+    state = false,
+    callback = function(v)
+        if v then 
             workspace.Camera.CameraSubject = game.Players:FindFirstChild(Settings.ChosenPlayer).Character.Humanoid
         else
             workspace.Camera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
         end
-	end
+    end
 })
 
-Players:AddButton({
-	Name = "Refresh Player",
-	Callback = function()
+plrs:AddButton({
+    text = "Teleport",
+    callback = function()
         moveto(game.Players:FindFirstChild(Settings.ChosenPlayer).Character.HumanoidRootPart.CFrame, tonumber(Settings.TpSpeed or 75))
     end
 })
 
 -- // Teleports \\ --
 
-local Teleport = Window:MakeTab({
-	Name = "Teleport",
-	Icon = "rbxassetid://4483345998",
-})
+local tele = Window:AddFolder("Teleports")
 
 local breath_style = {
     ["SunBreath"] = "Tanjiro",
@@ -593,18 +708,17 @@ for i,v in pairs(breath_style) do
     table.insert(breath_names, i)
 end
 
-Teleport:AddDropdown({
-	Name = "Select Breathing",
-	Default = "1",
-	Options = breath_style,
-	Callback = function(v)
-		Settings["ChosenBreathing"] = v
-	end    
+tele:AddList({
+    text = "Select Breathing",
+    values = breath_names,
+    callback = function(v)
+        Settings["ChosenBreathing"] = v
+    end
 })
 
-Teleport:AddButton({
-	Name = "Teleport",
-	Callback = function()
+tele:AddButton({
+    text = "Teleport Breathing",
+    callback = function()
         moveto(workspace.Npcs:FindFirstChild(breath_style[Settings.ChosenBreathing]):GetModelCFrame(), tonumber(Settings.TpSpeed or 75))
     end
 })
@@ -616,29 +730,29 @@ for i,v in pairs(workspace.Npcs:GetChildren()) do
     end
 end
 
-Teleport:AddDropdown({
-	Name = "Select NPC",
-	Default = "1",
-	Options = npc_list,
-	Callback = function(v)
-		Settings["ChosenNPC"] = v
-	end
+tele:AddList({
+    text = "Select NPC",
+    values = npc_list,
+    callback = function(v)
+        Settings["ChosenNPC"] = v
+    end
 })
 
-Teleport:AddButton({
-	Name = "Teleport",
-	Callback = function()
+tele:AddButton({
+    text = "Teleport NPC",
+    callback = function()
         moveto(workspace.Npcs:FindFirstChild(Settings.ChosenNPC):GetModelCFrame(), tonumber(Settings.TpSpeed or 75))
     end
 })
 
+-- // Items Farm \\ -- 
+local ores = Window:AddFolder("Items Farm")
 
--- // Items Farm \\ --
-
-local Items = Window:MakeTab({
-	Name = "Items",
-	Icon = "rbxassetid://4483345998",
-})
+local flower_list = {
+    "Flower1",
+    "Flower2",
+    "Flower3"
+}
 
 local ore_list = {
     "Sun Ore",
@@ -662,57 +776,91 @@ local Trinket_list = {
     "Silver Ring",
 }
 
-Items:AddDropdown({
-	Name = "Select Ore",
-	Default = "1",
-	Options = ore_list,
-	Callback = function(v)
+ores:AddList({
+    text = "Select Ore",
+    values = ore_list,
+    callback = function(v)
         Settings["ChosenOre"] = v
-	end
+    end
 })
 
-Items:AddToggle({
-	Name = "Farm Selected Ore",
-	Default = false,
-	Callback = function(v)
-		Settings["FarmOre"] = v
-	end
+ores:AddToggle({
+    text = "FarmOre",
+    state = false,
+    callback = function(v)
+        Settings["FarmOre"] = v
+    end
 })
 
-Items:AddDropdown({
-	Name = "Select Trinket",
-	Default = "1",
-	Options = Trinket_list,
-	Callback = function(v)
+ores:AddLabel({text = "--- If The Ore / Trinket Not Found ---"})
+ores:AddLabel({text = "--- Rejoin Or Server Hop ---"})
+
+ores:AddList({
+    text = "Select Trinket",
+    values = Trinket_list,
+    callback = function(v)
         Settings["ChosenTrinket"] = v
-	end
-})
-
-Items:AddToggle({
-	Name = "Farm Trinket",
-	Default = false,
-	Callback = function(v)
-		Settings["TrinketFarm"] = v
-	end
+    end
 })
 
 
--- // Items Functions \\ --
+ores:AddToggle({
+    text = "Trinket Farm",
+    state = false,
+    callback = function(v)
+        Settings["TrinketFarm"] = v
+    end
+})
 
-local function getOre()
-    local dist, ore = math.huge
-    for i,v in pairs(game:GetService("Workspace").Map.Minerals:GetDescendants()) do
-        if v.Name == "MineralName" and v.Value == Settings.ChosenOre then
-            local oremag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Parent.Position).magnitude
-            if oremag < dist then 
-                dist = oremag
-                ore = v.Parent
+ores:AddList({
+    text = "Select Flowers",
+    values = flower_list,
+    callback = function(v)
+        Settings["ChosenFlower"] = v
+    end
+})
+
+ores:AddToggle({
+    text = "Flower Farm",
+    state = false,
+    callback = function(v)
+        Settings["FlowerFarm"] = v
+    end
+})
+
+local function getFlowers()
+    local dist, flowers = math.huge
+    for i,v in pairs(workspace.Map:GetChildren()) do
+        if v:IsA("Model") and v.Name == Settings.ChosenFlower then
+            local mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v:GetModelCFrame().p).magnitude
+            if mag < dist then
+                dist = mag
+                flowers = v
             end
         end
     end
-    return ore
+    return flowers
 end
 
+spawn(function()
+    while wait() do
+        if Settings.FlowerFarm then
+            local trinmag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - getFlowers():GetModelCFrame().p).magnitude
+            if trinmag <= 20 then
+                for i,v in pairs(workspace.Map:GetChildren()) do
+                    if v:IsA("Model") and v:FindFirstChild("PickableItem") and v:FindFirstChild("Part") then
+                        local partmag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v:FindFirstChild("Part").Position).magnitude 
+                        if partmag < 20 then
+                            game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "Interaction", v.Part)
+                        end
+                    end
+                end
+            else
+                moveto(getFlowers():GetModelCFrame() * CFrame.new(0,0,0), tonumber(Settings.TpSpeed or 75))
+            end
+        end
+    end
+end)
 
 local function getTrinket()
     local dist, trin = math.huge
@@ -748,6 +896,20 @@ spawn(function()
     end
 end)
 
+local function getOre()
+    local dist, ore = math.huge
+    for i,v in pairs(game:GetService("Workspace").Map.Minerals:GetDescendants()) do
+        if v.Name == "MineralName" and v.Value == Settings.ChosenOre then
+            local oremag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Parent.Position).magnitude
+            if oremag < dist then 
+                dist = oremag
+                ore = v.Parent
+            end
+        end
+    end
+    return ore
+end
+
 spawn(function()
     while wait() do
         if Settings.FarmOre then 
@@ -761,17 +923,11 @@ spawn(function()
     end
 end)
 
-
 -- // Settings \\ --
-
-local Settings_Tab = Window:MakeTab({
-	Name = "Settings",
-	Icon = "rbxassetid://4483345998",
-})
-
+local Settings_Tab = Window:AddFolder("Settings")
 Settings_Tab:AddButton({
-	Name = "ServerHop!",
-	Callback = function()
+    text = "ServerHop",
+    callback = function()
         local Http = game:GetService("HttpService")
         local TPS = game:GetService("TeleportService")
         local Api = "https://games.roblox.com/v1/games/"
@@ -790,32 +946,17 @@ Settings_Tab:AddButton({
         until Server
 
         TPS:TeleportToPlaceInstance(_place,Server.id,game.Players.LocalPlayer)
-  	end
+    end
 })
 
-Settings_Tab:AddButton({
-	Name = "Destroy GUI",
-	Callback = function()
-        OrionLib:Destroy()
-  	end
-})
+-- // Credits \\ --
+local cred = Window:AddFolder("Credits")
+cred:AddButton({text = "S W A G#6007", callback = function()
+    setclipboard("S W A G#6007")
+end})
+cred:AddLabel({text = "MADE BY | S W A G#6007"})
 
-Settings_Tab:AddLabel("Credits")
+-- // Init \\ -- 
+Library:Init()
 
-Settings_Tab:AddButton({
-	Name = "Discord",
-	Callback = function()
-        setclipboard("https://discord.gg/yB8uENPJG9")
-
-        OrionLib:MakeNotification({
-            Name = "L4BIB HUB",
-            Content = "Discord Link Copied",
-            Image = "rbxassetid://4483345998",
-            Time = 5
-        })
-
-  	end
-})
-
--- // Finnish \\ --
-OrionLib:Init()
+end
