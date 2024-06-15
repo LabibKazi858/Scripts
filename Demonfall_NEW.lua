@@ -679,8 +679,6 @@ Items:AddToggle({
 	end
 })
 
-Items:AddLabel({text = "--- Trinket Farm ---"})
-
 Items:AddDropdown({
 	Name = "Select Trinket",
 	Default = "1",
