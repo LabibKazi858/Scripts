@@ -398,7 +398,11 @@ spawn(function()
         if Settings.NoCD then
             pcall(function()
                 for Index, Value in next, plr.Character:GetChildren() do
-                    if Value.Name == "Stun" or Value.Name == "SequenceCooldown" or Value.Name == "HeavyCooldown" or Value.Name == "Sequence" or Value.Name == "SequenceFactor" then 
+                    if Value.Name == "Stun" 
+                    or Value.Name == "SequenceCooldown" 
+                    or Value.Name == "HeavyCooldown" 
+                    or Value.Name == "Sequence" 
+                    or Value.Name == "SequenceFactor" then 
                         Value:Destroy()
                     end
                 end
