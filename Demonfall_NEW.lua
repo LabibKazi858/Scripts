@@ -297,6 +297,14 @@ Misc:AddButton({
 })
 
 Misc:AddToggle({
+	Name = "Auto Breathe",
+	Default = false,
+	Callback = function(v)
+		Settings["AutoBreathe"] = v
+	end
+})
+
+Misc:AddToggle({
 	Name = "No Swing Cooldown",
 	Default = false,
 	Callback = function(v)
@@ -398,17 +406,77 @@ Misc:AddToggle({
 })
 
 -- // Misc / Extra (Functions) \\ --
+local nofall
+nofall = hookmetamethod(game, "__namecall", function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+
+    if method == "FireServer"
+    and tostring(self) == "Async"
+    and args[1] == "Character"
+    and args[2] == "FallDamageServer"
+    and Settings.NoFall then
+        return nil
+    end
+
+    if method == "FireServer"
+    and tostring(self) == "Async"
+    and args[1] == "Character"
+    and args[2] == "DemonWeakness"
+    and Settings.AntiSun then
+        return nil
+    end
+
+    if method == "FireServer"
+    and tostring(self) == "Async"
+    and args[1] == "Character"
+    and args[2] == "Crow"
+    and Settings.AntiCrow then
+        return nil
+    end
+
+    return nofall(self, ...)
+end)
+
+spawn(function()
+    while wait() do
+        if Settings.AutoBreathe then
+            if game.Players.LocalPlayer.Character:FindFirstChild("Busy") then
+                game.Players.LocalPlayer.Character:FindFirstChild("Busy"):Destroy()
+            end
+
+            if game.Players.LocalPlayer.Character:FindFirstChild("Slow") then 
+                game.Players.LocalPlayer.Character:FindFirstChild("Slow"):Destroy()
+            end
+        end
+    end
+end)
+
+spawn(function()
+    while wait() do
+        if Settings.AutoBreathe then
+            if game:GetService("Players").LocalPlayer.Breathing.Value ~= 100 then 
+                game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "Breath", true)
+            end
+            wait(2)
+        end
+    end
+end)
 
 spawn(function()
     while wait() do
         if Settings.NoCD then
             pcall(function()
                 for Index, Value in next, plr.Character:GetChildren() do
-                    if Value.Name == "Stun" 
-                    or Value.Name == "SequenceCooldown" 
-                    or Value.Name == "HeavyCooldown" 
-                    or Value.Name == "Sequence" 
-                    or Value.Name == "SequenceFactor" then 
+                        if Value.Name == "Stun"
+                        or Value.Name == "Attacking"
+                        or Value.Name == "AttackAnnounce"
+                        or Value.Name == "Busy"
+                        or Value.Name == "SequenceCooldown"
+                        or Value.Name == "SequenceFactor"
+                        or Value.Name == "HeavyCooldown"
+                        or Value.Name == "Sequence"
+                        or Value.Name == "SequenceFactor" then
                         Value:Destroy()
                     end
                 end
@@ -418,13 +486,27 @@ spawn(function()
 end)
 
 spawn(function()
-    while wait() do 
-        if Settings.PickupAura then 
+    while wait() do
+        if Settings.AntiCombat then
+            pcall(function()
+                for i,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                    if table.find(baditems, v.Name) then
+                        v:Destroy()
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while wait() do
+        if Settings.PickupAura then
             pcall(function()
                 for i,v in pairs(workspace:GetChildren()) do
-                    if v.Name == "DropItem" then 
-                        local partmag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Position).magnitude 
-                        if partmag < 20 then 
+                    if v.Name == "DropItem" then
+                        local partmag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Position).magnitude
+                        if partmag < 20 then
                             game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "Interaction", v)
                         end
                     end
@@ -435,8 +517,8 @@ spawn(function()
 end)
 
 spawn(function()
-    while wait(0.1) do 
-        if Settings.AutoGourd then 
+    while wait(0.1) do
+        if Settings.AutoGourd then
             pcall(function()
                 game:GetService("VirtualInputManager"):SendMouseButtonEvent(500, 500, 0, true, game, 1)
                 game:GetService("ReplicatedStorage").Remotes.Sync:InvokeServer("Clay", "Server2")
@@ -447,23 +529,23 @@ end)
 
 spawn(function()
     while wait(1) do
-        if Settings.Visuals then 
+        if Settings.Visuals then
             game.Lighting.SunRays.Enabled = false
             game.Lighting.ColorCorrection.Enabled = false
             game.Lighting.Blur.Enabled = false
             game.Lighting.Bloom.Enabled = false
 
             for i,v in pairs(game.Lighting:GetChildren()) do
-                if v.Name == "Atmosphere" then 
-                    v.Density = 0 
-                    v.Glare = 0 
+                if v.Name == "Atmosphere" then
+                    v.Density = 0
+                    v.Glare = 0
                     v.Haze = 0
                 end
             end
-            if game.Lighting:FindFirstChild("Blind") then 
+            if game.Lighting:FindFirstChild("Blind") then
                 game.Lighting:FindFirstChild("Blind"):Destroy()
             end
-            if workspace:FindFirstChild("Folder") and workspace:FindFirstChild("Folder"):FindFirstChild("Part") then 
+            if workspace:FindFirstChild("Folder") and workspace:FindFirstChild("Folder"):FindFirstChild("Part") then
                 workspace:FindFirstChild("Folder"):Destroy()
             end
         end
@@ -499,7 +581,7 @@ Players:AddToggle({
 	Default = false,
 	Callback = function(v)
 		Settings["TogWalk"] = v
-	end    
+	end
 })
 
 Players:AddSlider({
@@ -528,7 +610,7 @@ mt.__newindex = newcclosure(function(f,i,v)
         return index(f,i,Settings.WalkSpeed)
     end
 
-    if tostring(f) == "Humanoid" and tostring(i) == "JumpPower" and Settings.TogJump then 
+    if tostring(f) == "Humanoid" and tostring(i) == "JumpPower" and Settings.TogJump then
         return index(f,i,Settings.JumpPower)
     end
 
@@ -563,11 +645,11 @@ Players:AddButton({
         Players:RemoveAll()
 
         for i,v in pairs(game.Players:GetPlayers()) do
-            if not table.find(plr_table, v.Name) then 
+            if not table.find(plr_table, v.Name) then
                 table.insert(plr_table, v.Name)
             end
         end
-        
+
         for i,v in pairs(plr_table) do
             Players:AddValue(tostring(v))
         end
@@ -578,7 +660,7 @@ Players:AddToggle({
 	Name = "Spectate",
 	Default = false,
 	Callback = function(v)
-		if v then 
+		if v then
             workspace.Camera.CameraSubject = game.Players:FindFirstChild(Settings.ChosenPlayer).Character.Humanoid
         else
             workspace.Camera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
@@ -622,7 +704,7 @@ Teleport:AddDropdown({
 	Options = breath_style,
 	Callback = function(v)
 		Settings["ChosenBreathing"] = v
-	end    
+	end
 })
 
 Teleport:AddButton({
@@ -727,7 +809,7 @@ local function getOre()
     for i,v in pairs(game:GetService("Workspace").Map.Minerals:GetDescendants()) do
         if v.Name == "MineralName" and v.Value == Settings.ChosenOre then
             local oremag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Parent.Position).magnitude
-            if oremag < dist then 
+            if oremag < dist then
                 dist = oremag
                 ore = v.Parent
             end
@@ -758,7 +840,7 @@ spawn(function()
             if trinmag <= 20 then
                 for i,v in pairs(workspace:GetChildren()) do
                     if v:IsA("Model") and v:FindFirstChild("PickableItem") and v:FindFirstChild("Part") then
-                        local partmag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v:FindFirstChild("Part").Position).magnitude 
+                        local partmag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v:FindFirstChild("Part").Position).magnitude
                         if partmag < 20 then
                             game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "Interaction", v.Part)
                         end
@@ -773,7 +855,7 @@ end)
 
 spawn(function()
     while wait() do
-        if Settings.FarmOre then 
+        if Settings.FarmOre then
             local ore_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - getOre().Position).magnitude
             if ore_mag <= 5 then
                 game:GetService("ReplicatedStorage").Remotes.Sync:InvokeServer("Pickaxe", "Server")
@@ -839,6 +921,15 @@ Settings_Tab:AddButton({
 
   	end
 })
+
+if game.Workspace:FindFirstChild("Perfect Crystal") then
+    OrionLib:MakeNotification({
+        Name = "L4BIB HUB",
+        Content = "Perfect Crystal Found In This Server.",
+        Image = "rbxassetid://4483345998",
+        Time = 60
+    })
+end
 
 -- // Finnish \\ --
 OrionLib:Init()
