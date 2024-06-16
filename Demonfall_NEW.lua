@@ -336,15 +336,16 @@ Misc:AddToggle({
 	end
 })
 
+local noclipT
 Misc:AddToggle({
 	Name = "NoClip",
 	Default = false,
 	Callback = function(v)
         if v then
-            game:GetService("RunService").Stepped:Connect(noclip)
+            noclipT = game:GetService("RunService").Stepped:Connect(noclip)
         else
-            if game:GetService("RunService").Stepped:Connect(noclip) then
-                game:GetService("RunService").Stepped:Connect(noclip):Disconnect()
+            if noclipT then
+                noclipT:Disconnect()
             end
         end
 	end
@@ -445,7 +446,7 @@ spawn(function()
                 game.Players.LocalPlayer.Character:FindFirstChild("Busy"):Destroy()
             end
 
-            if game.Players.LocalPlayer.Character:FindFirstChild("Slow") then 
+            if game.Players.LocalPlayer.Character:FindFirstChild("Slow") then
                 game.Players.LocalPlayer.Character:FindFirstChild("Slow"):Destroy()
             end
         end
@@ -455,7 +456,7 @@ end)
 spawn(function()
     while wait() do
         if Settings.AutoBreathe then
-            if game:GetService("Players").LocalPlayer.Breathing.Value ~= 100 then 
+            if game:GetService("Players").LocalPlayer.Breathing.Value ~= 100 then
                 game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "Breath", true)
             end
             wait(2)
