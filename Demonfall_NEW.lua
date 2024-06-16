@@ -31,6 +31,7 @@ end
 -- // Vars \\ --
 local plr           = game:GetService("Players").LocalPlayer
 local TweenService  = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
 local noclipE       = false
 local antifall      = nil
 local Settings      = {}
@@ -282,6 +283,8 @@ local Misc = Window:MakeTab({
 	Icon = "rbxassetid://4483345998",
 })
 
+Misc:AddLabel("--- Misc ---")
+
 Misc:AddButton({
 	Name = "GodMode",
 	Callback = function()
@@ -305,6 +308,14 @@ Misc:AddToggle({
 })
 
 Misc:AddToggle({
+	Name = "Equip-Sword",
+	Default = false,
+	Callback = function(v)
+		Settings["AutoSword"] = v
+	end
+})
+
+Misc:AddToggle({
 	Name = "No Swing Cooldown",
 	Default = false,
 	Callback = function(v)
@@ -319,6 +330,28 @@ Misc:AddToggle({
 		Settings["NoFall"] = v
 	end
 })
+
+local function InfJump(inputObject, gameProcessedEvent)
+    if inputObject.KeyCode == Enum.KeyCode.Space then
+        game.Players.LocalPlayer.Character.Humanoid:ChangeState(3)
+    end
+end
+local connection
+
+Misc:AddToggle({
+	Name = "InfJump",
+	Default = false,
+	Callback = function(v)
+		if v then 
+            connection = game:GetService("UserInputService").InputBegan:connect(InfJump)
+        else
+            if connection then 
+                connection:Disconnect()
+            end
+        end
+	end
+})
+
 
 Misc:AddToggle({
 	Name = "Anti Sun Burn",
@@ -441,6 +474,21 @@ end)
 
 spawn(function()
     while wait() do
+        if Settings.AutoSword then
+            pcall(function()
+                if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Model"):FindFirstChild("Blade") then
+                    if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Model"):FindFirstChild("Equipped").Part0 == nil then
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "R", false, game)
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+
+spawn(function()
+    while wait() do
         if Settings.AutoBreathe then
             if game.Players.LocalPlayer.Character:FindFirstChild("Busy") then
                 game.Players.LocalPlayer.Character:FindFirstChild("Busy"):Destroy()
@@ -553,7 +601,7 @@ spawn(function()
     end
 end)
 
--- // Players \\ --
+-- // Players Menu \\ --
 
 local Players = Window:MakeTab({
 	Name = "Players",
@@ -642,11 +690,13 @@ Players:AddDropdown({
 Players:AddButton({
 	Name = "Refresh Player",
 	Callback = function()
+
         table.clear(plr_table)
+
         Players:RemoveAll()
 
         for i,v in pairs(game.Players:GetPlayers()) do
-            if not table.find(plr_table, v.Name) then
+            if not table.find(plr_table, v.Name) then 
                 table.insert(plr_table, v.Name)
             end
         end
@@ -654,6 +704,7 @@ Players:AddButton({
         for i,v in pairs(plr_table) do
             Players:AddValue(tostring(v))
         end
+        
   	end
 })
 
@@ -695,6 +746,7 @@ local breath_style = {
     ["SoundBreath"] = "Uzui",
 }
 local breath_names = {}
+
 for i,v in pairs(breath_style) do
     table.insert(breath_names, i)
 end
@@ -702,11 +754,12 @@ end
 Teleport:AddDropdown({
 	Name = "Select Breathing",
 	Default = "1",
-	Options = breath_style,
+	Options = breath_names,
 	Callback = function(v)
 		Settings["ChosenBreathing"] = v
 	end
 })
+
 
 Teleport:AddButton({
 	Name = "Teleport",
@@ -795,10 +848,18 @@ Items:AddDropdown({
 })
 
 Items:AddToggle({
-	Name = "Farm Trinket",
+	Name = "Farm Selected Trinket!",
 	Default = false,
 	Callback = function(v)
 		Settings["TrinketFarm"] = v
+	end
+})
+
+Items:AddToggle({
+	Name = "Farm Random Trinket!",
+	Default = false,
+	Callback = function(v)
+		Settings["RandomTrinketFarm"] = v
 	end
 })
 
@@ -819,16 +880,18 @@ local function getOre()
     return ore
 end
 
-
 local function getTrinket()
     local dist, trin = math.huge
     for i,v in pairs(workspace:GetChildren()) do
-        if v:IsA("Model") and v.Name == Settings.ChosenTrinket and v:FindFirstChild("PickableItem") then
+        if v:IsA("Model") and v.Name == Settings.ChosenTrinket then
+
             local mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v:GetModelCFrame().p).magnitude
+
             if mag < dist then
                 dist = mag
                 trin = v
             end
+
         end
     end
     return trin
@@ -853,6 +916,44 @@ spawn(function()
         end
     end
 end)
+
+local function getrandomtrinket()
+    local dist, trin = math.huge
+    for i,v in pairs(workspace:GetChildren()) do
+        if v:IsA("Model") and v:FindFirstChild("PickableItem") then
+
+            local mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v:GetModelCFrame().p).magnitude
+
+            if mag < dist then
+                dist = mag
+                trin = v
+            end
+
+        end
+    end
+    return trin
+end
+
+spawn(function()
+    while wait() do
+        if Settings.RandomTrinketFarm then
+            local trinmag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - getrandomtrinket():GetModelCFrame().p).magnitude
+            if trinmag <= 20 then
+                for i,v in pairs(workspace:GetChildren()) do
+                    if v:IsA("Model") and v:FindFirstChild("PickableItem") and v:FindFirstChild("Part") then
+                        local partmag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v:FindFirstChild("Part").Position).magnitude
+                        if partmag < 20 then
+                            game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Character", "Interaction", v.Part)
+                        end
+                    end
+                end
+            else
+                moveto(getrandomtrinket():GetModelCFrame() * CFrame.new(0,0,0), tonumber(Settings.TpSpeed or 75))
+            end
+        end
+    end
+end)
+
 
 spawn(function()
     while wait() do
