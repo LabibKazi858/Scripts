@@ -299,6 +299,8 @@ Misc:AddButton({
   	end
 })
 
+Misc:AddLabel("--- Extra ---")
+
 Misc:AddToggle({
 	Name = "Auto Breathe",
 	Default = false,
@@ -342,10 +344,10 @@ Misc:AddToggle({
 	Name = "InfJump",
 	Default = false,
 	Callback = function(v)
-		if v then 
+		if v then
             connection = game:GetService("UserInputService").InputBegan:connect(InfJump)
         else
-            if connection then 
+            if connection then
                 connection:Disconnect()
             end
         end
@@ -438,6 +440,13 @@ Misc:AddToggle({
         end)
 	end
 })
+
+Misc:AddLabel("--- ESP ---")
+
+
+
+
+
 
 -- // Misc / Extra (Functions) \\ --
 local nofall
@@ -696,7 +705,7 @@ Players:AddButton({
         Players:RemoveAll()
 
         for i,v in pairs(game.Players:GetPlayers()) do
-            if not table.find(plr_table, v.Name) then 
+            if not table.find(plr_table, v.Name) then
                 table.insert(plr_table, v.Name)
             end
         end
@@ -704,7 +713,7 @@ Players:AddButton({
         for i,v in pairs(plr_table) do
             Players:AddValue(tostring(v))
         end
-        
+
   	end
 })
 
@@ -721,7 +730,7 @@ Players:AddToggle({
 })
 
 Players:AddButton({
-	Name = "Refresh Player",
+	Name = "Teleport Player",
 	Callback = function()
         moveto(game.Players:FindFirstChild(Settings.ChosenPlayer).Character.HumanoidRootPart.CFrame, tonumber(Settings.TpSpeed or 75))
     end
@@ -744,6 +753,7 @@ local breath_style = {
     ["MistBreath"] = "Tokito",
     ["InsectBreath"] = "Shinobu",
     ["SoundBreath"] = "Uzui",
+    ["FlowerBreat"] = "Tsuyuri",
 }
 local breath_names = {}
 
@@ -821,6 +831,12 @@ local Trinket_list = {
     "Silver Ring",
 }
 
+local flower_list = {
+    "Flower1",
+    "Flower2",
+    "Flower3",
+}
+
 Items:AddDropdown({
 	Name = "Select Ore",
 	Default = "1",
@@ -863,6 +879,23 @@ Items:AddToggle({
 	end
 })
 
+Items:AddLabel("---Others---")
+
+Items:AddDropdown({
+	Name = "Select Flower",
+	Default = "1",
+	Options = flower_list,
+	Callback = function(v)
+        Settings["ChosenFlower"] = v
+	end
+})
+
+Items:AddButton({
+	Name = "Teleport To Flower!",
+	Callback = function()
+        moveto(game.Workspace.Map:FindFirstChild(Settings.ChosenFlower):GetModelCFrame() * CFrame.new(0,0,0), tonumber(Settings.TpSpeed or 75))
+  	end
+})
 
 -- // Items Functions \\ --
 
@@ -1029,14 +1062,14 @@ if game.Workspace:FindFirstChild("Perfect Crystal") then
         Name = "L4BIB HUB",
         Content = "Perfect Crystal Found In This Server.",
         Image = "rbxassetid://4483345998",
-        Time = 60
+        Time = 9e9
     })
 else
     OrionLib:MakeNotification({
         Name = "L4BIB HUB",
         Content = "No Perfect Crystal In This Server :-(",
         Image = "rbxassetid://4483345998",
-        Time = 10
+        Time = 9e9
     })
 end
 
