@@ -92,10 +92,18 @@ AutoFarming:AddDropdown({
 })
 
 AutoFarming:AddToggle({
-	Name = "AutoFarm Mobs",
+	Name = "Tween AutoFarm Mobs",
 	Default = false,
 	Callback = function(v)
 		Settings["autofarm_mobs"] = v
+	end
+})
+
+AutoFarming:AddToggle({
+	Name = "instant AutoFarm Mobs",
+	Default = false,
+	Callback = function(v)
+		Settings["instant_autofarm_mobs"] = v
 	end
 })
 
@@ -123,10 +131,18 @@ AutoFarming:AddDropdown({
 })
 
 AutoFarming:AddToggle({
-	Name = "AutoFarm Bosses",
+	Name = "Tween AutoFarm Bosses",
 	Default = false,
 	Callback = function(v)
 		Settings["autofarm_boss"] = v
+	end
+})
+
+AutoFarming:AddToggle({
+	Name = "Instant AutoFarm Bosses",
+	Default = false,
+	Callback = function(v)
+		Settings["instant_autofarm_boss"] = v
 	end
 })
 
@@ -227,12 +243,122 @@ end)
 
 spawn(function()
     while wait() do
+        if Settings.instant_autofarm_mobs then
+            pcall(function()
+                local enemy_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - getMob():GetModelCFrame().p).magnitude
+
+                if not getMob():FindFirstChild("HumanoidRootPart") then
+                    moveto(getMob():GetModelCFrame() * CFrame.new(0,0,3), tonumber(Settings.TpSpeed or 75))
+                end
+
+                if getMob():FindFirstChild("HumanoidRootPart") and not getMob():FindFirstChild("Executed") then
+                    plr.Character.HumanoidRootPart.CFrame = getMob().HumanoidRootPart.CFrame * CFrame.new(0,0,3)
+                end
+
+                if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Model"):FindFirstChild("Blade") then
+                    if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Model"):FindFirstChild("Equipped").Part0 == nil then
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "R", false, game)
+                    end
+                end
+
+                if getMob():FindFirstChild("Executed") then
+                    wait(1)
+                    getMob():Destroy()
+                end
+
+                if getMob():FindFirstChild("Down") then
+                    moveto(getMob():GetModelCFrame() * CFrame.new(0,0,3), tonumber(Settings.TpSpeed or 75))
+                    game:GetService("ReplicatedStorage").Remotes.Sync:InvokeServer("Character", "Execute")
+                end
+
+                for Index, Value in next, plr.Character:GetChildren() do
+                    if Value.Name == "Stun"
+                    or Value.Name == "SequenceCooldown"
+                    or Value.Name == "HeavyCooldown"
+                    or Value.Name == "Sequence"
+                    or Value.Name == "SequenceFactor"
+                    then
+                        Value:Destroy()
+                    end
+                end
+
+                if enemy_mag <= 10 then
+                    if getMob():FindFirstChild("Block") then
+                        game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Katana", "Heavy")
+                    else
+                        game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Katana", "Server")
+                    end
+
+                end
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while wait() do
         if Settings.autofarm_boss then
             pcall(function()
                 local enemy_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - getBosses():GetModelCFrame().p).magnitude
 
                 if not getBosses():FindFirstChild("Executed") then
                     moveto(getBosses():GetModelCFrame() * CFrame.new(0,0,3), tonumber(Settings.TpSpeed or 75))
+                end
+
+                if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Model"):FindFirstChild("Blade") then
+                    if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Model"):FindFirstChild("Equipped").Part0 == nil then
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "R", false, game)
+                    end
+                end
+
+                if getBosses():FindFirstChild("Executed") then
+                    wait(1)
+                    getBosses():Destroy()
+                end
+
+                if getBosses():FindFirstChild("Down") then
+                    moveto(getBosses():GetModelCFrame() * CFrame.new(0,0,3), tonumber(Settings.TpSpeed or 75))
+                    game:GetService("ReplicatedStorage").Remotes.Sync:InvokeServer("Character", "Execute")
+                end
+
+                for Index, Value in next, plr.Character:GetChildren() do
+                    if Value.Name == "Stun"
+                    or Value.Name == "SequenceCooldown"
+                    or Value.Name == "HeavyCooldown"
+                    or Value.Name == "Sequence"
+                    or Value.Name == "SequenceFactor"
+                    then
+                        Value:Destroy()
+                    end
+                end
+
+                if enemy_mag <= 10 then
+                    if getBosses():FindFirstChild("Block") then
+                        game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Katana", "Heavy")
+                    else
+                        game:GetService("ReplicatedStorage").Remotes.Async:FireServer("Katana", "Server")
+                    end
+
+                end
+
+            end)
+        end
+    end
+end)
+
+spawn(function()
+    while wait() do
+        if Settings.instant_autofarm_boss then
+            pcall(function()
+                local enemy_mag = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - getBosses():GetModelCFrame().p).magnitude
+
+                if not getBosses():FindFirstChild("HumanoidRootPart") then
+                    moveto(getBosses():GetModelCFrame() * CFrame.new(0,0,3), tonumber(Settings.TpSpeed or 75))
+                end
+
+                if getBosses():FindFirstChild("HumanoidRootPart") and not getBosses():FindFirstChild("Executed") then
+                    plr.Character.HumanoidRootPart.CFrame = getBosses().HumanoidRootPart.CFrame * CFrame.new(0,0,3)
                 end
 
                 if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Model"):FindFirstChild("Blade") then
