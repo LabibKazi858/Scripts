@@ -1,12 +1,12 @@
-local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
--- Function to check if the player is using a mobile device
-local function checkIfMobile(player)
-    -- Check if the player's input type is touch-enabled
-    if UserInputService.TouchEnabled then
+local function checkIfMobilePlayer()
+    if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled and not UserInputService.MouseEnabled then
         loadstring(game:HttpGet("https://raw.githubusercontent.com/LabibKazi858/Scripts/main/DemonFallMobile"))()
     else
         loadstring(game:HttpGet("https://raw.githubusercontent.com/LabibKazi858/Scripts/main/DemonFallNewUi"))()
     end
 end
+
+checkIfMobilePlayer()
+
